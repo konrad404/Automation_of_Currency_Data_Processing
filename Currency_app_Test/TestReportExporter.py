@@ -9,7 +9,6 @@ import glob
 class TestReportExporter(unittest.TestCase):
 
     def setUp(self):
-        """Prepare test data and ensure clean reports directory."""
         self.test_data = [
             ("euro", "EUR", "2025-01-01", 4.50),
             ("dolar amerykański", "USD", "2025-01-01", 3.80)

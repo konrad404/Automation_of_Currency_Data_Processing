@@ -1,10 +1,15 @@
 import unittest
 from unittest.mock import patch
 import requests
+from requests import HTTPError, Timeout
+
 from Currency_app.NBPDataFetcher import NBPDataFetcher
 
 
 class TestNBPDataFetcher(unittest.TestCase):
+    def setUp(self):
+        self.start_date = "2025-01-21"
+        self.end_date = "2025-01-22"
 
     @patch('requests.get')
     def test_fetch_exchange_rates_success(self, mock_get):
@@ -22,9 +27,7 @@ class TestNBPDataFetcher(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = [mock_response]
 
-        start_date = "2025-01-21"
-        end_date = "2025-01-22"
-        response = NBPDataFetcher.fetch_exchange_rates(start_date, end_date)
+        response = NBPDataFetcher.fetch_exchange_rates(self.start_date, self.end_date)
 
         self.assertEqual(len(response), 1)
         self.assertEqual(response[0]['table'], 'A')
@@ -36,11 +39,10 @@ class TestNBPDataFetcher(unittest.TestCase):
         mock_get.return_value.status_code = 404
         mock_get.return_value.raise_for_status.side_effect = requests.exceptions.HTTPError("404 Not Found")
 
-        start_date = "2025-01-21"
-        end_date = "2025-01-22"
-        data = NBPDataFetcher.fetch_exchange_rates(start_date, end_date)
+        with self.assertRaises(HTTPError) as context:
+            data = NBPDataFetcher.fetch_exchange_rates(self.start_date, self.end_date)
 
-        self.assertEqual(data, [])
+        self.assertEqual(str(context.exception), "404 Not Found")
 
     @patch('requests.get')
     def test_fetch_exchange_rates_invalid_json(self, mock_get):
@@ -48,22 +50,20 @@ class TestNBPDataFetcher(unittest.TestCase):
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.side_effect = ValueError("Invalid JSON")
 
-        start_date = "2025-01-21"
-        end_date = "2025-01-22"
-        data = NBPDataFetcher.fetch_exchange_rates(start_date, end_date)
+        with self.assertRaises(ValueError) as context:
+            data = NBPDataFetcher.fetch_exchange_rates(self.start_date, self.end_date)
 
-        self.assertEqual(data, [])
+        self.assertEqual(str(context.exception), "Invalid JSON")
 
     @patch('requests.get')
     def test_fetch_exchange_rates_timeout(self, mock_get):
 
         mock_get.side_effect = requests.exceptions.Timeout("Request timed out")
 
-        start_date = "2025-01-21"
-        end_date = "2025-01-22"
-        data = NBPDataFetcher.fetch_exchange_rates(start_date, end_date)
+        with self.assertRaises(Timeout) as context:
+            data = NBPDataFetcher.fetch_exchange_rates(self.start_date, self.end_date)
 
-        self.assertEqual(data, [])
+        self.assertEqual(str(context.exception), "Request timed out")
 
 
 if __name__ == '__main__':

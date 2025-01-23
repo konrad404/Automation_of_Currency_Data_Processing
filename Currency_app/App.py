@@ -1,3 +1,6 @@
+import os
+import sys
+
 from Currency_app.NBPDataFetcher import NBPDataFetcher
 from Currency_app.DatabaseManager import DatabaseManager
 from Currency_app.DataAnalyzer import DataAnalyzer
@@ -5,7 +8,7 @@ from Currency_app.ReportExporter import ReportExporter
 from datetime import datetime
 
 DB_FILE = "currency_rates.db"
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class CurrencyApp:
     def __init__(self, db_file):

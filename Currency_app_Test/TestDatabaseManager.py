@@ -8,12 +8,10 @@ from Currency_app.DatabaseManager import DatabaseManager
 class TestDatabaseManager(unittest.TestCase):
 
     def setUp(self):
-        """Create a temporary database file"""
         self.db_file = f'test_db_{datetime.now().strftime("%Y%m%d%H%M%S")}.db'
         self.db_manager = DatabaseManager(self.db_file)
 
     def tearDown(self):
-        """Remove the database file after the test."""
         if os.path.exists(self.db_file):
             os.remove(self.db_file)
 

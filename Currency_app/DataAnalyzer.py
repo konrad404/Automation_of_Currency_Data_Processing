@@ -1,5 +1,4 @@
 import sqlite3
-import pandas as pd
 
 class DataAnalyzer:
     def __init__(self, db_manager):
@@ -51,19 +50,6 @@ class DataAnalyzer:
                 ''', (start_date, end_date))
 
         max_decrease = cursor.fetchone()
-
-        # cursor.execute('''
-        #             SELECT
-        #                 code,
-        #                 rate,
-        #                 date,
-        #                 ROW_NUMBER() OVER (PARTITION BY code ORDER BY date ASC) AS first_occurrence
-        #             FROM exchange_rates
-        #             WHERE date BETWEEN ? AND ?
-        #         ''', (start_date, end_date))
-        #
-        # tmp = cursor.fetchall()
-        # print(tmp)
 
         connection.close()
 
